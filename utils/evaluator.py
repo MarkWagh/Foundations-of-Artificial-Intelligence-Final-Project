@@ -1,0 +1,71 @@
+"""
+evaluator.py
+------------
+Stores and displays performance metrics for each search run.
+
+Metrics tracked:
+  - algorithm_name   : str
+  - path_found       : bool
+  - path_length      : int   (number of steps)
+  - path_cost        : float (sum of step costs)
+  - nodes_expanded   : int   (main measure of computational work)
+  - nodes_generated  : int   (frontier additions)
+  - execution_time_ms: float (wall-clock time in milliseconds)
+"""
+
+from dataclasses import dataclass, field
+from typing import List, Optional
+import time
+
+
+@dataclass
+class SearchResult:
+    algorithm_name: str
+    path_found: bool
+    path: List[int] = field(default_factory=list)          # sequence of states
+    actions: List[int] = field(default_factory=list)       # sequence of actions
+    path_length: int = 0
+    path_cost: float = 0.0
+    nodes_expanded: int = 0
+    nodes_generated: int = 0
+    execution_time_ms: float = 0.0
+
+    def summary(self) -> str:
+        status = "SUCCESS" if self.path_found else "FAILED "
+        return (
+            f"[{status}] {self.algorithm_name:<30} | "
+            f"Path len: {self.path_length:>3} | "
+            f"Cost: {self.path_cost:>6.1f} | "
+            f"Expanded: {self.nodes_expanded:>5} | "
+            f"Generated: {self.nodes_generated:>5} | "
+            f"Time: {self.execution_time_ms:>7.3f} ms"
+        )
+
+
+class Timer:
+    """Simple context-manager stopwatch."""
+
+    def __enter__(self):
+        self.elapsed = 0.0
+        self._start = time.perf_counter()
+        return self
+
+    def __exit__(self, *_):
+        self.elapsed = (time.perf_counter() - self._start) * 1000
+
+
+def print_results_table(results: List[SearchResult]) -> None:
+    """Pretty-prints a comparison table to stdout."""
+    print("\n" + "=" * 95)
+    print(f"{'ALGORITHM':<30} | {'FOUND':>6} | {'PATH':>5} | {'COST':>6} | "
+          f"{'EXPANDED':>8} | {'GENERATED':>9} | {'TIME (ms)':>9}")
+    print("-" * 95)
+    for r in results:
+        found = "Yes" if r.path_found else "No"
+        path  = str(r.path_length) if r.path_found else "-"
+        cost  = f"{r.path_cost:.1f}" if r.path_found else "-"
+        print(
+            f"{r.algorithm_name:<30} | {found:>6} | {path:>5} | {cost:>6} | "
+            f"{r.nodes_expanded:>8} | {r.nodes_generated:>9} | {r.execution_time_ms:>9.3f}"
+        )
+    print("=" * 95)
