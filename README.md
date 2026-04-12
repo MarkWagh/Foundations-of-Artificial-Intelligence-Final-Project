@@ -17,12 +17,6 @@ maze-solver/
 │   ├── ucs.py                       # Uniform Cost Search
 │   └── astar.py                     # A* Search (Manhattan & Euclidean)
 │
-├── core/                            # Core data structures
-│   ├── __init__.py
-│   ├── maze.py                      # Maze environment model
-│   ├── state.py                     # State representation (if used)
-│   └── result.py                    # SearchResult dataclass (deprecated — see evaluator.py)
-│
 ├── environment/                     # Gymnasium wrapper
 │   ├── __init__.py
 │   └── maze_env.py                  # MazeEnv class — state-space interface
@@ -33,10 +27,6 @@ maze-solver/
 │   ├── evaluator.py                 # SearchResult dataclass, Timer, metrics
 │   ├── heuristics.py                # Manhattan & Euclidean distance heuristics
 │   └── visualizer.py                # ASCII visualization + matplotlib charts
-│
-├── tests/                           # Unit tests
-│   ├── __init__.py
-│   └── test_algorithms.py           # Algorithm validation tests
 │
 ├── results/                         # Generated output (charts, reports)
 │   ├── 4x4_Standard/
