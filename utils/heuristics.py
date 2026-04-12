@@ -36,16 +36,3 @@ def euclidean_distance(state: int, goal: int, env: MazeEnv) -> float:
     r1, c1 = env.state_to_coords(state)
     r2, c2 = env.state_to_coords(goal)
     return math.sqrt((r1 - r2) ** 2 + (c1 - c2) ** 2)
-
-
-def zero_heuristic(state: int, goal: int, env: MazeEnv) -> float:
-    """h(n) = 0 — makes A* behave like UCS. Useful baseline."""
-    return 0.0
-
-
-# Registry — makes it easy to iterate in experiments
-HEURISTICS = {
-    "Manhattan": manhattan_distance,
-    "Euclidean": euclidean_distance,
-    "Zero (UCS baseline)": zero_heuristic,
-}

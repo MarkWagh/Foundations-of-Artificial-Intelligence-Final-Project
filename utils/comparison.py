@@ -8,18 +8,18 @@ comparison table with analysis notes.
 from __future__ import annotations
 from typing import List
 
-from maze_solver.core.maze            import Maze
-from maze_solver.core.result          import SearchResult
-from maze_solver.algorithms.bfs       import bfs
-from maze_solver.algorithms.dfs       import dfs
-from maze_solver.algorithms.ucs       import ucs
-from maze_solver.algorithms.astar     import astar
-from maze_solver.utils.heuristics     import manhattan, euclidean
+from environment.maze_env import MazeEnv
+from utils.evaluator import SearchResult
+from algorithms.bfs import bfs
+from algorithms.dfs import dfs
+from algorithms.ucs import ucs
+from algorithms.astar import astar
+from utils.heuristics import manhattan_distance, euclidean_distance
 
 
-def run_all(maze: Maze) -> List[SearchResult]:
+def run_all(env: MazeEnv) -> List[SearchResult]:
     """
-    Execute BFS, DFS, UCS, A*(Manhattan), and A*(Euclidean) on *maze*.
+    Execute BFS, DFS, UCS, A*(Manhattan), and A*(Euclidean) on *env*.
 
     Returns
     -------
@@ -27,11 +27,11 @@ def run_all(maze: Maze) -> List[SearchResult]:
         One result per algorithm, in the order listed above.
     """
     return [
-        bfs(maze),
-        dfs(maze),
-        ucs(maze),
-        astar(maze, heuristic=manhattan),
-        astar(maze, heuristic=euclidean),
+        bfs(env),
+        dfs(env),
+        ucs(env),
+        astar(env, heuristic=manhattan_distance),
+        astar(env, heuristic=euclidean_distance),
     ]
 
 
