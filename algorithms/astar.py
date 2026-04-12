@@ -46,6 +46,7 @@ def astar(
     nodes_expanded  = 0
     nodes_generated = 1
 
+    result = None
     with Timer() as t:
         while heap:
             f, _, state, g, path, actions = heapq.heappop(heap)
@@ -56,7 +57,7 @@ def astar(
                 continue
 
             if env.is_goal(state):
-                return SearchResult(
+                result = SearchResult(
                     algorithm_name  = f"A* ({heuristic_name})",
                     path_found      = True,
                     path            = path,
@@ -65,8 +66,9 @@ def astar(
                     path_cost       = g,
                     nodes_expanded  = nodes_expanded,
                     nodes_generated = nodes_generated,
-                    execution_time_ms = t.elapsed,
+                    execution_time_ms = 0.0,
                 )
+                break
 
             for next_state, action, step_cost in env.get_successors(state):
                 new_g = g + step_cost
@@ -79,10 +81,14 @@ def astar(
                     heapq.heappush(heap, (f_new, counter, next_state, new_g,
                                           path + [next_state], actions + [action]))
 
-    return SearchResult(
-        algorithm_name  = f"A* ({heuristic_name})",
-        path_found      = False,
-        nodes_expanded  = nodes_expanded,
-        nodes_generated = nodes_generated,
-        execution_time_ms = t.elapsed,
-    )
+        if result is None:
+            result = SearchResult(
+                algorithm_name  = f"A* ({heuristic_name})",
+                path_found      = False,
+                nodes_expanded  = nodes_expanded,
+                nodes_generated = nodes_generated,
+                execution_time_ms = 0.0,
+            )
+
+    result.execution_time_ms = t.elapsed
+    return result

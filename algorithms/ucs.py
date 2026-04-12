@@ -33,6 +33,7 @@ def ucs(env: MazeEnv) -> SearchResult:
     nodes_expanded  = 0
     nodes_generated = 1
 
+    result = None
     with Timer() as t:
         while heap:
             g, _, state, path, actions = heapq.heappop(heap)
@@ -43,7 +44,7 @@ def ucs(env: MazeEnv) -> SearchResult:
                 continue
 
             if env.is_goal(state):
-                return SearchResult(
+                result = SearchResult(
                     algorithm_name  = "UCS",
                     path_found      = True,
                     path            = path,
@@ -52,8 +53,9 @@ def ucs(env: MazeEnv) -> SearchResult:
                     path_cost       = g,
                     nodes_expanded  = nodes_expanded,
                     nodes_generated = nodes_generated,
-                    execution_time_ms = t.elapsed,
+                    execution_time_ms = 0.0,
                 )
+                break
 
             for next_state, action, step_cost in env.get_successors(state):
                 new_g = g + step_cost
@@ -64,10 +66,14 @@ def ucs(env: MazeEnv) -> SearchResult:
                     heapq.heappush(heap, (new_g, counter, next_state,
                                           path + [next_state], actions + [action]))
 
-    return SearchResult(
-        algorithm_name  = "UCS",
-        path_found      = False,
-        nodes_expanded  = nodes_expanded,
-        nodes_generated = nodes_generated,
-        execution_time_ms = t.elapsed,
-    )
+        if result is None:
+            result = SearchResult(
+                algorithm_name  = "UCS",
+                path_found      = False,
+                nodes_expanded  = nodes_expanded,
+                nodes_generated = nodes_generated,
+                execution_time_ms = 0.0,
+            )
+
+    result.execution_time_ms = t.elapsed
+    return result
