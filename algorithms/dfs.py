@@ -1,72 +1,67 @@
-"""
-dfs.py — Depth-First Search
------------------------------
-Strategy  : Expand deepest node first.
-Data structure: LIFO stack (or recursion).
-Optimal?  : NO — may find a long or winding path.
-Complete? : NO — can loop without a visited set; complete WITH visited set
-            but may still miss shorter paths.
-Time/Space: O(b^m) time, O(bm) space, m=max depth.
+"""DFS (Depth-First Search) algorithm.
 
-Note: We use an explicit stack (iterative DFS) to avoid Python's recursion
-limit on large mazes.
+Explores deep into the maze before backtracking.
+Usually faster than BFS but doesn't find shortest paths.
+Uses iteration instead of recursion for large mazes.
 """
 
-from typing import List
 from environment.maze_env import MazeEnv
 from utils.evaluator import SearchResult, Timer
 
 
 def dfs(env: MazeEnv) -> SearchResult:
-    """
-    Iterative Depth-First Search.
-    Returns the FIRST path found (not necessarily shortest).
+    """Find a path using depth-first search.
+    
+    Goes as far down each branch as possible.
+    May find longer paths but uses less memory than BFS.
     """
     start = env.get_start()
-    goal  = env.get_goal()
+    goal = env.get_goal()
 
-    # Stack entries: (state, path, actions)
-    stack: List = [(start, [start], [])]
-    visited = {start}
+    # Stack holds: (position, path taken, actions taken)
+    stk = [(start, [start], [])]
+    seen = {start}
 
-    nodes_expanded  = 0
-    nodes_generated = 1
+    expanded = 0
+    generated = 1
 
     result = None
-    with Timer() as t:
-        while stack:
-            state, path, actions = stack.pop()   # LIFO
-            nodes_expanded += 1
+    timer = Timer()
+    
+    with timer:
+        while stk:
+            pos, path, moves = stk.pop()
+            expanded += 1
 
-            if env.is_goal(state):
+            if env.is_goal(pos):
                 result = SearchResult(
-                    algorithm_name  = "DFS",
-                    path_found      = True,
-                    path            = path,
-                    actions         = actions,
-                    path_length     = len(path) - 1,
-                    path_cost       = float(len(path) - 1),
-                    nodes_expanded  = nodes_expanded,
-                    nodes_generated = nodes_generated,
-                    execution_time_ms = 0.0,
+                    algorithm_name="DFS",
+                    path_found=True,
+                    path=path,
+                    actions=moves,
+                    path_length=len(path) - 1,
+                    path_cost=float(len(path) - 1),
+                    nodes_expanded=expanded,
+                    nodes_generated=generated,
+                    execution_time_ms=0.0,
                 )
                 break
 
-            # Push successors in reverse order so left-most is explored first
-            for next_state, action, cost in reversed(env.get_successors(state)):
-                if next_state not in visited:
-                    visited.add(next_state)
-                    nodes_generated += 1
-                    stack.append((next_state, path + [next_state], actions + [action]))
+            # Add neighbors in reverse so left paths explored first
+            for neighbor, direction, _ in reversed(env.get_successors(pos)):
+                if neighbor not in seen:
+                    seen.add(neighbor)
+                    generated += 1
+                    stk.append((neighbor, path + [neighbor], moves + [direction]))
 
         if result is None:
             result = SearchResult(
-                algorithm_name  = "DFS",
-                path_found      = False,
-                nodes_expanded  = nodes_expanded,
-                nodes_generated = nodes_generated,
-                execution_time_ms = 0.0,
+                algorithm_name="DFS",
+                path_found=False,
+                nodes_expanded=expanded,
+                nodes_generated=generated,
+                execution_time_ms=0.0,
             )
 
-    result.execution_time_ms = t.elapsed
+    result.execution_time_ms = timer.elapsed
     return result

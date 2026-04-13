@@ -1,74 +1,68 @@
-"""
-bfs.py — Breadth-First Search
-------------------------------
-Strategy  : Expand shallowest (fewest hops) node first.
-Data structure: FIFO queue.
-Optimal?  : YES — for uniform step costs (all costs = 1 here).
-Complete? : YES — will always find a solution if one exists.
-Time/Space: O(b^d) where b=branching factor, d=solution depth.
+"""BFS (Breadth-First Search) algorithm.
+
+Explores the maze level by level, guaranteeing shortest path.
+Uses FIFO queue so we process nodes in the order discovered.
 """
 
 from collections import deque
-from typing import Optional, List
-
 from environment.maze_env import MazeEnv
 from utils.evaluator import SearchResult, Timer
 
 
 def bfs(env: MazeEnv) -> SearchResult:
-    """
-    Breadth-First Search on the MazeEnv state space.
-
-    Returns a SearchResult with the shortest path (fewest steps).
+    """Find shortest maze path using breadth-first search.
+    
+    Explores all neighbors at distance d before distance d+1.
+    Always finds the optimal solution for equal-cost moves.
     """
     start = env.get_start()
-    goal  = env.get_goal()
+    goal = env.get_goal()
 
-    # Each entry in the queue: (current_state, path_so_far, actions_so_far)
-    queue: deque = deque()
-    queue.append((start, [start], []))
+    # Queue holds: (current position, full path to here, moves made)
+    q = deque([(start, [start], [])])
+    seen = {start}
 
-    # Visited set prevents re-expanding already-seen states
-    visited = {start}
-
-    nodes_expanded  = 0
-    nodes_generated = 1  # start node
+    expanded = 0
+    generated = 1
 
     result = None
-    with Timer() as t:
-        while queue:
-            state, path, actions = queue.popleft()
-            nodes_expanded += 1
+    timer = Timer()
+    
+    with timer:
+        while q:
+            pos, path, moves = q.popleft()
+            expanded += 1
 
-            if env.is_goal(state):
+            # Reached the goal?
+            if env.is_goal(pos):
                 result = SearchResult(
-                    algorithm_name  = "BFS",
-                    path_found      = True,
-                    path            = path,
-                    actions         = actions,
-                    path_length     = len(path) - 1,
-                    path_cost       = float(len(path) - 1),
-                    nodes_expanded  = nodes_expanded,
-                    nodes_generated = nodes_generated,
-                    execution_time_ms = 0.0,
+                    algorithm_name="BFS",
+                    path_found=True,
+                    path=path,
+                    actions=moves,
+                    path_length=len(path) - 1,
+                    path_cost=float(len(path) - 1),
+                    nodes_expanded=expanded,
+                    nodes_generated=generated,
+                    execution_time_ms=0.0,
                 )
                 break
 
-            for next_state, action, cost in env.get_successors(state):
-                if next_state not in visited:
-                    visited.add(next_state)
-                    nodes_generated += 1
-                    queue.append((next_state, path + [next_state], actions + [action]))
+            # Explore each valid neighbor
+            for neighbor, direction, step_cost in env.get_successors(pos):
+                if neighbor not in seen:
+                    seen.add(neighbor)
+                    generated += 1
+                    q.append((neighbor, path + [neighbor], moves + [direction]))
 
-        # No path found
         if result is None:
             result = SearchResult(
-                algorithm_name  = "BFS",
-                path_found      = False,
-                nodes_expanded  = nodes_expanded,
-                nodes_generated = nodes_generated,
-                execution_time_ms = 0.0,
+                algorithm_name="BFS",
+                path_found=False,
+                nodes_expanded=expanded,
+                nodes_generated=generated,
+                execution_time_ms=0.0,
             )
 
-    result.execution_time_ms = t.elapsed
+    result.execution_time_ms = timer.elapsed
     return result
