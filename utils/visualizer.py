@@ -1,7 +1,7 @@
-"""
-visualizer.py
--------------
-ASCII + Matplotlib visualisations for the maze and search results.
+"""Draws the maze and makes charts comparing the algorithms.
+
+Shows ASCII grid with paths marked, and generates PNG images
+with side-by-side performance comparisons.
 """
 
 import os

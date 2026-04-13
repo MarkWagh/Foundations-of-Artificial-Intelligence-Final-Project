@@ -1,15 +1,8 @@
-"""
-astar.py — A* Search
-----------------------
-Strategy  : Expand the node with lowest f(n) = g(n) + h(n).
-            g(n) = cost from start to n.
-            h(n) = heuristic estimate of cost from n to goal.
-Data structure: Min-heap keyed on f(n).
-Optimal?  : YES — provided h(n) is ADMISSIBLE (never overestimates).
-Complete? : YES.
-Key insight: A* balances exploration (g) and exploitation (h).
-             With h=0 it degenerates to UCS; with h=perfect it expands
-             only nodes on the optimal path.
+"""A* Search - the best of both worlds.
+
+A* combines the actual cost from start (g) with an educated guess to the goal (h).
+It's like Dijkstra's algorithm but with a heuristic to guide the search.
+If the heuristic is good, A* is much faster than UCS.
 """
 
 import heapq
@@ -20,39 +13,29 @@ from utils.evaluator import SearchResult, Timer
 
 def astar(
     env: MazeEnv,
-    heuristic: Callable[[int, int, MazeEnv], float],
+    heuristic,
     heuristic_name: str = "heuristic",
 ) -> SearchResult:
-    """
-    A* Search.
-
-    Parameters
-    ----------
-    env            : MazeEnv instance
-    heuristic      : function(state, goal, env) -> float  (must be admissible)
-    heuristic_name : label shown in results table
-    """
+    """A* Search with a given heuristic function."""
     start = env.get_start()
     goal  = env.get_goal()
 
     h0 = heuristic(start, goal, env)
 
-    # Heap entries: (f, tie_breaker, state, g, path, actions)
+    # Priority queue: (f_score, tiebreaker, state, actual_cost, path, moves)
     counter = 0
     heap = [(h0, counter, start, 0.0, [start], [])]
-
-    best_g: Dict[int, float] = {start: 0.0}
-
-    nodes_expanded  = 0
-    nodes_generated = 1
+    best_g = {start: 0.0}
+    expanded = 0
+    generated = 1
 
     result = None
     with Timer() as t:
         while heap:
             f, _, state, g, path, actions = heapq.heappop(heap)
-            nodes_expanded += 1
+            expanded += 1
 
-            # Lazy deletion
+            # Already found a shorter route to this state
             if g > best_g.get(state, float('inf')):
                 continue
 
@@ -64,8 +47,8 @@ def astar(
                     actions         = actions,
                     path_length     = len(path) - 1,
                     path_cost       = g,
-                    nodes_expanded  = nodes_expanded,
-                    nodes_generated = nodes_generated,
+                    nodes_expanded  = expanded,
+                    nodes_generated = generated,
                     execution_time_ms = 0.0,
                 )
                 break
@@ -77,7 +60,7 @@ def astar(
                     h = heuristic(next_state, goal, env)
                     f_new = new_g + h
                     counter += 1
-                    nodes_generated += 1
+                    generated += 1
                     heapq.heappush(heap, (f_new, counter, next_state, new_g,
                                           path + [next_state], actions + [action]))
 
@@ -85,8 +68,8 @@ def astar(
             result = SearchResult(
                 algorithm_name  = f"A* ({heuristic_name})",
                 path_found      = False,
-                nodes_expanded  = nodes_expanded,
-                nodes_generated = nodes_generated,
+                nodes_expanded  = expanded,
+                nodes_generated = generated,
                 execution_time_ms = 0.0,
             )
 

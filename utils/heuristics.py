@@ -1,13 +1,7 @@
-"""
-heuristics.py
--------------
-Admissible heuristic functions for informed search (A*).
+"""Different guesses for how far away the goal is.
 
-Both heuristics are ADMISSIBLE for the FrozenLake maze because they
-never overestimate the true shortest-path distance (step cost = 1).
-
-  - Manhattan distance: exact or under-estimate on grid mazes.
-  - Euclidean distance: always <= Manhattan distance, so also admissible.
+Used by A* to guide the search smarter. Manhattan and Euclidean distances
+both work well on grid mazes and never overestimate the real distance.
 """
 
 import math
@@ -15,24 +9,14 @@ from environment.maze_env import MazeEnv
 
 
 def manhattan_distance(state: int, goal: int, env: MazeEnv) -> float:
-    """
-    |Δrow| + |Δcol|  — the classic grid heuristic.
-
-    Admissible because each move changes row OR col by exactly 1,
-    so the true cost is always >= manhattan distance.
-    """
+    """Manhattan distance - sum of row and column differences."""
     r1, c1 = env.state_to_coords(state)
     r2, c2 = env.state_to_coords(goal)
     return abs(r1 - r2) + abs(c1 - c2)
 
 
 def euclidean_distance(state: int, goal: int, env: MazeEnv) -> float:
-    """
-    sqrt(Δrow^2 + Δcol^2) — straight-line distance.
-
-    Admissible because Euclidean <= Manhattan for any grid.
-    Less informed than Manhattan but still guides search toward goal.
-    """
+    """Straight-line distance as the crow flies."""
     r1, c1 = env.state_to_coords(state)
     r2, c2 = env.state_to_coords(goal)
     return math.sqrt((r1 - r2) ** 2 + (c1 - c2) ** 2)

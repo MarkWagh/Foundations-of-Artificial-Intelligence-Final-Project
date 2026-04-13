@@ -1,12 +1,8 @@
-"""
-ucs.py — Uniform Cost Search
-------------------------------
-Strategy  : Expand the node with the lowest cumulative path cost g(n).
-Data structure: Min-heap (priority queue) keyed on g(n).
-Optimal?  : YES — always finds the minimum-cost path.
-Complete? : YES.
-Relation  : Equivalent to Dijkstra's algorithm on a graph.
-            Also equivalent to A* with h(n) = 0.
+"""Uniform Cost Search (UCS) - finds the cheapest path.
+
+UCS keeps expanding the cheapest node so far. Since all moves cost the same here,
+it ends up finding the shortest path like BFS, but in a more general way.
+Used with a priority queue (min-heap).
 """
 
 import heapq
@@ -16,31 +12,25 @@ from utils.evaluator import SearchResult, Timer
 
 
 def ucs(env: MazeEnv) -> SearchResult:
-    """
-    Uniform Cost Search.
-    Priority queue entries: (cumulative_cost, tie_breaker, state, path, actions)
-    """
+    """Uniform Cost Search using a priority queue."""
     start = env.get_start()
     goal  = env.get_goal()
 
-    # (g_cost, counter, state, path, actions)
+    # Heap stores (cost, tiebreaker, state, path, moves)
     counter = 0
     heap = [(0.0, counter, start, [start], [])]
-
-    # Best known cost to reach each state
-    best_cost: Dict[int, float] = {start: 0.0}
-
-    nodes_expanded  = 0
-    nodes_generated = 1
+    best = {start: 0.0}
+    expanded = 0
+    generated = 1
 
     result = None
     with Timer() as t:
         while heap:
             g, _, state, path, actions = heapq.heappop(heap)
-            nodes_expanded += 1
+            expanded += 1
 
-            # Lazy deletion: skip if we already found a cheaper route
-            if g > best_cost.get(state, float('inf')):
+            # Skip if we found a better route to this state already
+            if g > best.get(state, float('inf')):
                 continue
 
             if env.is_goal(state):
@@ -51,18 +41,18 @@ def ucs(env: MazeEnv) -> SearchResult:
                     actions         = actions,
                     path_length     = len(path) - 1,
                     path_cost       = g,
-                    nodes_expanded  = nodes_expanded,
-                    nodes_generated = nodes_generated,
+                    nodes_expanded  = expanded,
+                    nodes_generated = generated,
                     execution_time_ms = 0.0,
                 )
                 break
 
             for next_state, action, step_cost in env.get_successors(state):
                 new_g = g + step_cost
-                if new_g < best_cost.get(next_state, float('inf')):
-                    best_cost[next_state] = new_g
+                if new_g < best.get(next_state, float('inf')):
+                    best[next_state] = new_g
                     counter += 1
-                    nodes_generated += 1
+                    generated += 1
                     heapq.heappush(heap, (new_g, counter, next_state,
                                           path + [next_state], actions + [action]))
 
@@ -70,8 +60,8 @@ def ucs(env: MazeEnv) -> SearchResult:
             result = SearchResult(
                 algorithm_name  = "UCS",
                 path_found      = False,
-                nodes_expanded  = nodes_expanded,
-                nodes_generated = nodes_generated,
+                nodes_expanded  = expanded,
+                nodes_generated = generated,
                 execution_time_ms = 0.0,
             )
 
