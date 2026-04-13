@@ -1,8 +1,7 @@
-"""
-utils/comparison.py
--------------------
-Run all four algorithms on the same maze and produce a side-by-side
-comparison table with analysis notes.
+"""Runs all the algorithms at once.
+
+Executes each search algorithm on the same maze and collects
+results for easy comparison.
 """
 
 from __future__ import annotations
@@ -18,14 +17,7 @@ from utils.heuristics import manhattan_distance, euclidean_distance
 
 
 def run_all(env: MazeEnv) -> List[SearchResult]:
-    """
-    Execute BFS, DFS, UCS, A*(Manhattan), and A*(Euclidean) on *env*.
-
-    Returns
-    -------
-    List[SearchResult]
-        One result per algorithm, in the order listed above.
-    """
+    """Runs all algorithms on the maze."""
     return [
         bfs(env),
         dfs(env),

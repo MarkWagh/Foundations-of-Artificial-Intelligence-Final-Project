@@ -1,16 +1,7 @@
-"""
-evaluator.py
-------------
-Stores and displays performance metrics for each search run.
+"""Results storage and display.
 
-Metrics tracked:
-  - algorithm_name   : str
-  - path_found       : bool
-  - path_length      : int   (number of steps)
-  - path_cost        : float (sum of step costs)
-  - nodes_expanded   : int   (main measure of computational work)
-  - nodes_generated  : int   (frontier additions)
-  - execution_time_ms: float (wall-clock time in milliseconds)
+Keeps track of how well each algorithm performed - path length, nodes looked at,
+and how long it took to run.
 """
 
 from dataclasses import dataclass, field

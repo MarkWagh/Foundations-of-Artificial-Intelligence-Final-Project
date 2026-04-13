@@ -1,10 +1,7 @@
-"""
-maze_env.py
------------
-Wraps Gymnasium's FrozenLake-v1 into a clean state-space search interface.
+"""Maze environment wrapper.
 
-State  : integer index (row * ncols + col)
-Actions: 0=LEFT, 1=DOWN, 2=RIGHT, 3=UP
+Wraps FrozenLake and turns it into a state-space search problem.
+Provides access to start, goal, successors, etc.
 """
 
 import gymnasium as gym
@@ -31,23 +28,17 @@ TILE_HOLE  = b'H'
 
 
 class MazeEnv:
-    """
-    A deterministic, state-space search wrapper around FrozenLake-v1.
-
-    Provides:
-      - get_start() / get_goal()
-      - get_successors(state) -> list of (next_state, action, cost)
-      - is_goal(state)
-      - state_to_coords(state) / coords_to_state(row, col)
-      - The raw grid (desc) for visualisation
+    """Wraps FrozenLake into a search problem.
+    
+    Gives us methods to get the start and goal, and to find what states
+    we can reach from each current state.
     """
 
     def __init__(self, map_name: str = "4x4", custom_map: List[str] = None):
-        """
-        Parameters
-        ----------
-        map_name    : "4x4" or "8x8" (ignored when custom_map is given)
-        custom_map  : optional list of strings, e.g. ["SFFF", "FHFH", ...]
+        """Create a maze from a standard name or custom grid.
+        
+        map_name: "4x4" or "8x8" (standard Gymnasium mazes)
+        custom_map: list of strings like ["SFFF", "FHFF", ...] (S=start, G=goal, F=free, H=hole)
         """
         if custom_map:
             desc = [list(row.encode()) for row in custom_map]
@@ -73,9 +64,7 @@ class MazeEnv:
         self._start: int = self._find_tile(TILE_START)
         self._goal:  int = self._find_tile(TILE_GOAL)
 
-    # ------------------------------------------------------------------
-    # Core interface used by every search algorithm
-    # ------------------------------------------------------------------
+    # Interface for search algorithms
 
     def get_start(self) -> int:
         return self._start

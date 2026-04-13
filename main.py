@@ -70,12 +70,8 @@ MAPS = {
 }
 
 
-# ---------------------------------------------------------------------------
-# Run all algorithms on a single environment
-# ---------------------------------------------------------------------------
-
 def run_all_algorithms(env: MazeEnv) -> list:
-    """Returns list of SearchResult for BFS, DFS, UCS, A*(Manhattan), A*(Euclidean)."""
+    """Runs all 5 algorithms on the maze and returns their results."""
     results = []
 
     results.append(bfs(env))
@@ -87,12 +83,8 @@ def run_all_algorithms(env: MazeEnv) -> list:
     return results
 
 
-# ---------------------------------------------------------------------------
-# Display helpers
-# ---------------------------------------------------------------------------
-
 def print_path_steps(result: SearchResult, env: MazeEnv) -> None:
-    """Prints the sequence of moves taken."""
+    """Shows the moves the algorithm made to reach the goal."""
     if not result.path_found:
         print(f"  {result.algorithm_name}: No path found.\n")
         return
@@ -100,10 +92,6 @@ def print_path_steps(result: SearchResult, env: MazeEnv) -> None:
     print(f"  {result.algorithm_name} path ({result.path_length} steps): "
           + " -> ".join(moves) + "\n")
 
-
-# ---------------------------------------------------------------------------
-# Main experiment loop
-# ---------------------------------------------------------------------------
 
 def main():
     output_dir = os.path.join(os.path.dirname(__file__), "results")
