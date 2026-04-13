@@ -10,13 +10,17 @@ from environment.maze_env import MazeEnv
 
 def manhattan_distance(state: int, goal: int, env: MazeEnv) -> float:
     """Manhattan distance - sum of row and column differences."""
+    # get positions
     r1, c1 = env.state_to_coords(state)
     r2, c2 = env.state_to_coords(goal)
+    # just add the differences - simple and works well
     return abs(r1 - r2) + abs(c1 - c2)
 
 
 def euclidean_distance(state: int, goal: int, env: MazeEnv) -> float:
     """Straight-line distance as the crow flies."""
+    # get current and goal positions
     r1, c1 = env.state_to_coords(state)
     r2, c2 = env.state_to_coords(goal)
+    # calculate diagonal distance using pythagorean theorem
     return math.sqrt((r1 - r2) ** 2 + (c1 - c2) ** 2)

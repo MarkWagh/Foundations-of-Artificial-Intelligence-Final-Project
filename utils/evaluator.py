@@ -34,25 +34,32 @@ class SearchResult:
 
 class Timer:
     """Simple context-manager stopwatch."""
+    # use this to measure how long an algorithm takes
 
     def __enter__(self):
+        # start timing
         self.elapsed = 0.0
         self._start = time.perf_counter()
         return self
 
     def __exit__(self, *_):
+        # stop timing and convert to milliseconds
         self.elapsed = (time.perf_counter() - self._start) * 1000
 
 
 def print_results_table(results):
     """Pretty-prints a comparison table to stdout."""
+    # show all the results in a nice table format
     print("\n" + "=" * 95)
     print(f"{'ALGORITHM':<30} | {'FOUND':>6} | {'PATH':>5} | {'COST':>6} | "
           f"{'EXPANDED':>8} | {'GENERATED':>9} | {'TIME (ms)':>9}")
     print("-" * 95)
     for r in results:
+        # check if path was found
         found = "Yes" if r.path_found else "No"
+        # show path length if successful
         path  = str(r.path_length) if r.path_found else "-"
+        # show cost if successful
         cost  = f"{r.path_cost:.1f}" if r.path_found else "-"
         print(
             f"{r.algorithm_name:<30} | {found:>6} | {path:>5} | {cost:>6} | "
