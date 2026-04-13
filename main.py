@@ -61,11 +61,14 @@ MAPS = {
 
 def run_all_algorithms(env: MazeEnv) -> list:
     """Runs all 5 algorithms on the maze and returns their results."""
+    # test each algorithm to see how they perform
     results = []
 
+    # try each one
     results.append(bfs(env))
     results.append(dfs(env))
     results.append(ucs(env))
+    # A* with both heuristics to compare
     results.append(astar(env, manhattan_distance, heuristic_name="Manhattan"))
     results.append(astar(env, euclidean_distance, heuristic_name="Euclidean"))
 
@@ -90,12 +93,13 @@ def main():
         print(f"  MAZE: {maze_label}")
         print("#" * 70)
 
-        # Build environment
+        # create the maze environment from config
         if maze_cfg["custom_map"]:
             env = MazeEnv(custom_map=maze_cfg["custom_map"])
         else:
             env = MazeEnv(map_name=maze_cfg["map_name"])
 
+        # show info about this maze
         print(f"\n  Grid size : {env.nrows} x {env.ncols}")
         print(f"  Start     : state {env.get_start()} "
               f"(row={env.state_to_coords(env.get_start())[0]}, "
@@ -104,16 +108,16 @@ def main():
               f"(row={env.state_to_coords(env.get_goal())[0]}, "
               f"col={env.state_to_coords(env.get_goal())[1]})")
 
-        # Show empty maze
+        # show what the empty maze looks like
         print_maze(env, title="Empty Maze")
 
-        # Run algorithms
+        # run all search algorithms on this maze
         results = run_all_algorithms(env)
 
-        # Results table
+        # print results in table format
         print_results_table(results)
 
-        # Show ASCII path for each algorithm
+        # show the actual paths taken
         print("\n  --- Path Visualisations (ASCII) ---")
         for res in results:
             if res.path_found:
