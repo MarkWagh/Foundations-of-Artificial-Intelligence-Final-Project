@@ -6,25 +6,14 @@ Provides access to start, goal, successors, etc.
 
 import gymnasium as gym
 import numpy as np
-from typing import List, Tuple, Dict
 
 
-# Human-readable action labels
 ACTION_NAMES = {0: "LEFT", 1: "DOWN", 2: "RIGHT", 3: "UP"}
-
-# Movement deltas for (row, col) — matches Gymnasium's action encoding
-ACTION_DELTAS = {
-    0: (0, -1),   # LEFT
-    1: (1,  0),   # DOWN
-    2: (0,  1),   # RIGHT
-    3: (-1, 0),   # UP
-}
-
-# Tile types
+ACTION_DELTAS = {0: (0, -1), 1: (1, 0), 2: (0, 1), 3: (-1, 0)}
 TILE_START = b'S'
-TILE_GOAL  = b'G'
+TILE_GOAL = b'G'
 TILE_FROZEN = b'F'
-TILE_HOLE  = b'H'
+TILE_HOLE = b'H'
 
 
 class MazeEnv:
@@ -34,7 +23,7 @@ class MazeEnv:
     we can reach from each current state.
     """
 
-    def __init__(self, map_name: str = "4x4", custom_map: List[str] = None):
+    def __init__(self, map_name="4x4", custom_map=None):
         """Create a maze from a standard name or custom grid.
         
         map_name: "4x4" or "8x8" (standard Gymnasium mazes)
@@ -56,36 +45,27 @@ class MazeEnv:
                 render_mode=None,
             )
 
-        self.desc: np.ndarray = self._gym_env.unwrapped.desc   # 2-D byte array
-        self.nrows: int = self.desc.shape[0]
-        self.ncols: int = self.desc.shape[1]
-        self.n_states: int = self.nrows * self.ncols
+        self.desc = self._gym_env.unwrapped.desc
+        self.nrows = self.desc.shape[0]
+        self.ncols = self.desc.shape[1]
+        self.n_states = self.nrows * self.ncols
 
-        self._start: int = self._find_tile(TILE_START)
-        self._goal:  int = self._find_tile(TILE_GOAL)
+        self._start = self._find_tile(TILE_START)
+        self._goal = self._find_tile(TILE_GOAL)
 
-    # Interface for search algorithms
-
-    def get_start(self) -> int:
+    def get_start(self):
         return self._start
-
-    def get_goal(self) -> int:
+    def get_goal(self):
         return self._goal
-
-    def is_goal(self, state: int) -> bool:
+    def is_goal(self, state):
         return state == self._goal
-
-    def is_valid(self, state: int) -> bool:
+    def is_valid(self, state):
         """Returns False for hole tiles."""
         row, col = self.state_to_coords(state)
         return self.desc[row][col] != TILE_HOLE
 
-    def get_successors(self, state: int) -> List[Tuple[int, int, float]]:
-        """
-        Returns a list of (next_state, action, step_cost) tuples.
-        Holes and out-of-bound cells are excluded.
-        Step cost is always 1.0 (uniform cost maze).
-        """
+    def get_successors(self, state):
+        """Returns list of (next_state, action, cost) - excludes holes and boundaries."""
         row, col = self.state_to_coords(state)
         successors = []
 
@@ -105,31 +85,20 @@ class MazeEnv:
             successors.append((next_state, action, 1.0))
 
         return successors
-
-    # ------------------------------------------------------------------
-    # Coordinate helpers
-    # ------------------------------------------------------------------
-
-    def state_to_coords(self, state: int) -> Tuple[int, int]:
+    def state_to_coords(self, state):
         return divmod(state, self.ncols)
 
-    def coords_to_state(self, row: int, col: int) -> int:
+    def coords_to_state(self, row, col):
         return row * self.ncols + col
-
-    def get_tile(self, state: int) -> bytes:
+    def get_tile(self, state):
         row, col = self.state_to_coords(state)
         return self.desc[row][col]
-
-    # ------------------------------------------------------------------
-    # Internal helpers
-    # ------------------------------------------------------------------
-
-    def _find_tile(self, tile_type: bytes) -> int:
+    def _find_tile(self, tile_type):
         for r in range(self.nrows):
             for c in range(self.ncols):
                 if self.desc[r][c] == tile_type:
                     return self.coords_to_state(r, c)
         raise ValueError(f"Tile '{tile_type}' not found in map.")
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return f"MazeEnv({self.nrows}x{self.ncols}, start={self._start}, goal={self._goal})"

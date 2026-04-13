@@ -5,8 +5,6 @@ results for easy comparison.
 """
 
 from __future__ import annotations
-from typing import List
-
 from environment.maze_env import MazeEnv
 from utils.evaluator import SearchResult
 from algorithms.bfs import bfs
@@ -16,7 +14,7 @@ from algorithms.astar import astar
 from utils.heuristics import manhattan_distance, euclidean_distance
 
 
-def run_all(env: MazeEnv) -> List[SearchResult]:
+def run_all(env):
     """Runs all algorithms on the maze."""
     return [
         bfs(env),
@@ -27,7 +25,7 @@ def run_all(env: MazeEnv) -> List[SearchResult]:
     ]
 
 
-def print_comparison(results: List[SearchResult]) -> None:
+def print_comparison(results):
     """Print a formatted comparison table to stdout."""
     col_w = 22
     headers = [

@@ -5,7 +5,6 @@ and how long it took to run.
 """
 
 from dataclasses import dataclass, field
-from typing import List, Optional
 import time
 
 
@@ -13,8 +12,8 @@ import time
 class SearchResult:
     algorithm_name: str
     path_found: bool
-    path: List[int] = field(default_factory=list)          # sequence of states
-    actions: List[int] = field(default_factory=list)       # sequence of actions
+    path: list = field(default_factory=list)
+    actions: list = field(default_factory=list)
     path_length: int = 0
     path_cost: float = 0.0
     nodes_expanded: int = 0
@@ -45,7 +44,7 @@ class Timer:
         self.elapsed = (time.perf_counter() - self._start) * 1000
 
 
-def print_results_table(results: List[SearchResult]) -> None:
+def print_results_table(results):
     """Pretty-prints a comparison table to stdout."""
     print("\n" + "=" * 95)
     print(f"{'ALGORITHM':<30} | {'FOUND':>6} | {'PATH':>5} | {'COST':>6} | "

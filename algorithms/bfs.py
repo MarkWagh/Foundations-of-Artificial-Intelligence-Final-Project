@@ -18,7 +18,7 @@ def bfs(env: MazeEnv) -> SearchResult:
     start = env.get_start()
     goal = env.get_goal()
 
-    # Queue holds: (current position, full path to here, moves made)
+    # Queue holds (current position, full path, moves)
     q = deque([(start, [start], [])])
     seen = {start}
 
@@ -48,7 +48,6 @@ def bfs(env: MazeEnv) -> SearchResult:
                 )
                 break
 
-            # Explore each valid neighbor
             for neighbor, direction, step_cost in env.get_successors(pos):
                 if neighbor not in seen:
                     seen.add(neighbor)
