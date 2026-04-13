@@ -18,7 +18,7 @@ def dfs(env: MazeEnv) -> SearchResult:
     start = env.get_start()
     goal = env.get_goal()
 
-    # Stack holds: (position, path taken, actions taken)
+    # Stack holds (position, path taken, actions taken)
     stk = [(start, [start], [])]
     seen = {start}
 

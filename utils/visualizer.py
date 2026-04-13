@@ -19,7 +19,7 @@ COLOUR_MAP = {
 PATH_COLOUR = [0.4, 0.6, 1.0]
 
 
-def print_maze(env, path: Optional[List[int]] = None, title: str = "") -> None:
+def print_maze(env, path=None, title=""):
     path_set = set(path) if path else set()
     start, goal = env.get_start(), env.get_goal()
     if title:
@@ -45,7 +45,7 @@ def print_maze(env, path: Optional[List[int]] = None, title: str = "") -> None:
     print("  S=Start  G=Goal  #=Hole  .=Open  *=Path\n")
 
 
-def save_maze_image(env, results, output_dir: str = "results") -> None:
+def save_maze_image(env, results, output_dir="results"):
     try:
         import matplotlib.pyplot as plt
     except ImportError:

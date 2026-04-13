@@ -1,16 +1,8 @@
-"""
-main.py — Entry point for the Maze-Solving Intelligent Agent project.
-Runs BFS, DFS, UCS, and A* (Manhattan + Euclidean) on two maze sizes,
-prints results tables, shows ASCII paths, and saves PNG charts.
-
-Usage:
-    python main.py
-"""
+"""Maze solver entry point. Runs all algorithms on various test mazes."""
 
 import sys
 import os
 
-# Make sure sub-packages resolve correctly when run from the project root
 sys.path.insert(0, os.path.dirname(__file__))
 
 from environment.maze_env import MazeEnv, ACTION_NAMES
@@ -18,9 +10,6 @@ from algorithms import bfs, dfs, ucs, astar
 from utils.heuristics import manhattan_distance, euclidean_distance
 from utils.evaluator import SearchResult, print_results_table
 from utils.visualizer import print_maze, save_maze_image, save_metrics_chart
-
-
-# Maze definitions
 
 MAPS = {
     "4x4 Standard": {

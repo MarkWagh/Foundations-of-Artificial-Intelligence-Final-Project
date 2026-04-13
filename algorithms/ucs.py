@@ -6,7 +6,6 @@ Used with a priority queue (min-heap).
 """
 
 import heapq
-from typing import Dict
 from environment.maze_env import MazeEnv
 from utils.evaluator import SearchResult, Timer
 
@@ -16,7 +15,6 @@ def ucs(env: MazeEnv) -> SearchResult:
     start = env.get_start()
     goal  = env.get_goal()
 
-    # Heap stores (cost, tiebreaker, state, path, moves)
     counter = 0
     heap = [(0.0, counter, start, [start], [])]
     best = {start: 0.0}
@@ -58,11 +56,11 @@ def ucs(env: MazeEnv) -> SearchResult:
 
         if result is None:
             result = SearchResult(
-                algorithm_name  = "UCS",
-                path_found      = False,
-                nodes_expanded  = expanded,
-                nodes_generated = generated,
-                execution_time_ms = 0.0,
+                algorithm_name="UCS",
+                path_found=False,
+                nodes_expanded=expanded,
+                nodes_generated=generated,
+                execution_time_ms=0.0,
             )
 
     result.execution_time_ms = t.elapsed

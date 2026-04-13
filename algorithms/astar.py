@@ -6,7 +6,6 @@ If the heuristic is good, A* is much faster than UCS.
 """
 
 import heapq
-from typing import Callable, Dict
 from environment.maze_env import MazeEnv
 from utils.evaluator import SearchResult, Timer
 
@@ -22,7 +21,6 @@ def astar(
 
     h0 = heuristic(start, goal, env)
 
-    # Priority queue: (f_score, tiebreaker, state, actual_cost, path, moves)
     counter = 0
     heap = [(h0, counter, start, 0.0, [start], [])]
     best_g = {start: 0.0}
@@ -66,11 +64,11 @@ def astar(
 
         if result is None:
             result = SearchResult(
-                algorithm_name  = f"A* ({heuristic_name})",
-                path_found      = False,
-                nodes_expanded  = expanded,
-                nodes_generated = generated,
-                execution_time_ms = 0.0,
+                algorithm_name=f"A* ({heuristic_name})",
+                path_found=False,
+                nodes_expanded=expanded,
+                nodes_generated=generated,
+                execution_time_ms=0.0,
             )
 
     result.execution_time_ms = t.elapsed
